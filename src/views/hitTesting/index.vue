@@ -1,11 +1,11 @@
 <template>
   <div>
-    <h1>Aim Test</h1>
+    <h1>命中测试</h1>
   </div>
 </template>
 <script>
 export default {
-  name: 'aim-test'
+  name: 'hit-testing'
 }
 </script>
 <style scoped>

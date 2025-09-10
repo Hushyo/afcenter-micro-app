@@ -4,7 +4,7 @@
   </div>
 </template>
 <script>
-import knowledgeBaseComponent from './views/KnowledgeBase.vue'
+import knowledgeBaseComponent from './views/knowledgeBase/index.vue'
 import settingPage from './views/settingPage/index.vue'
 export default {
   name: 'index',
@@ -28,17 +28,17 @@ export default {
       knowledgeBase: {},
       knowledgeBaseList: [],
       eventListener: {
-        'navigateTo': this.navigateTo,
-        'selectKnowledgeBase': this.selectKnowledgeBase,
+        'SET_ROUTE': this.setRoute,
+        'SET_KNOWLEDGE_BASE': this.setKnowledgeBase,
         'SET_KNOWLEDGE_BASE_LIST': this.setKnowledgeBaseList
       }
     }
   },
   methods: {
-    navigateTo(route) {
+    setRoute(route) {
       this.currentRoutePath = route.path
     },
-    selectKnowledgeBase(knowledgeBase) {
+    setKnowledgeBase(knowledgeBase) {
       this.knowledgeBase = knowledgeBase
     },
     setKnowledgeBaseList(knowledgeBaseList) {

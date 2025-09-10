@@ -11,7 +11,7 @@ module.exports = {
   },
   filename: `remoteEntry.js`,
   exposes: { // 对外暴露的模块（页面)
-    './knowledgeBase': './src/views/KnowledgeBase.vue',
+    './knowledgeBase': './src/views/knowledgeBase/index.vue',
     './store': './src/store/index.js', // 默认将子应用 store 导出,供base应用注册
     './index': './src/index.vue',
   },

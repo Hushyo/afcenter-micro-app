@@ -1,7 +1,7 @@
 <template>
   <div class="setting-container pb-24 p-16-24 ">
     <el-row class="setting-content">
-      <el-col :span="24" class="save-publish"><el-button type="primary">保存并发布</el-button></el-col>
+      <el-col :span="24" class="save-publish flex justify-end"><el-button type="primary">保存并发布</el-button></el-col>
       <el-col :span="10">
         <div class="p-24 pb-0 mb-16 ">
           <h4>应用信息</h4>
@@ -44,9 +44,9 @@
 
             <!-- 角色设定 -->
             <el-form-item label="角色设定">
-              <div class="editor">
+              <div class="editor flex align-center">
                 <textarea v-model="app.roleSetting" placeholder="你是 XXX 小助手" class="editor-input p-12" />
-                <div class="eidtor-footer">
+                <div class="editor-footer flex justify-end">
                   <el-button circle style="border: none;"><i class="el-icon-full-screen" /> </el-button>
                 </div>
               </div>
@@ -55,9 +55,9 @@
             <!-- 提示词(无引用知识库) -->
             <el-form-item prop="promptNoKnowledgeBase">
               <template #label>提示词(无引用知识库)<el-tooltip content="通过调整提示词内容，可以引导大模型聊天方向，该提示词会被固定在上下文的开头。可以使用变量：{question} 是用户提出问题的占位符。" :visible-arrow="true" placement="top"><i class="el-icon-warning-outline" /> </el-tooltip></template>
-              <div class="editor">
+              <div class="editor flex align-center">
                 <textarea v-model="app.promptNoKnowledgeBase" :placeholder="knowledgeBase.model_setting.no_references_prompt" class="editor-input p-12" />
-                <div class="eidtor-footer">
+                <div class="editor-footer flex justify-end">
                   <el-button circle style="border: none;"><i class="el-icon-full-screen" /> </el-button>
                 </div>
               </div>
@@ -76,9 +76,9 @@
             <!-- 提示词(引用知识库) -->
             <el-form-item prop="promptWithKnowledgeBase">
               <template #label>提示词(引用知识库)<el-tooltip content="通过调整提示词内容，可以引导大模型聊天方向，该提示词会被固定在上下文的开头。可以使用变量：{data} 是引用知识库中分段的占位符；{question} 是用户提出问题的占位符。" :visible-arrow="true" placement="top"><i class="el-icon-warning-outline" /> </el-tooltip></template>
-              <div class="editor">
+              <div class="editor flex align-center">
                 <textarea v-model="app.promptWithKnowledgeBase" :placeholder="knowledgeBase.model_setting.prompt" class="editor-input p-12" />
-                <div class="eidtor-footer">
+                <div class="editor-footer flex justify-end">
                   <el-button circle style="border: none;"><i class="el-icon-full-screen" /> </el-button>
                 </div>
               </div>
@@ -86,9 +86,9 @@
 
             <!-- 开场白 -->
             <el-form-item label="开场白">
-              <div class="editor">
+              <div class="editor flex align-center">
                 <textarea v-model="app.prologue" class="editor-input p-12" />
-                <div class="eidtor-footer">
+                <div class="editor-footer flex justify-end">
                   <el-button circle style="border: none;"><i class="el-icon-full-screen" /> </el-button>
                 </div>
               </div>
@@ -104,7 +104,7 @@
       <el-col :span="14" class="p-24 border-l">
         <h4 class="mb-16">调试预览</h4>
         <div class="dialog">
-          <div class="dialog-header p-24">
+          <div class="dialog-header p-24 flex align-center">
             <el-avatar :style="{backgroundColor:getBackgroundColor(app.name),color:getTextColor(getBackgroundColor(app.name)) }">
               <template>{{ app.name[0] }}</template>
             </el-avatar>
@@ -142,7 +142,7 @@
                 @input="handleInput"
                 @keydown.ctrl.enter="sendMessage"
               />
-              <div class="send-button-container m-0">
+              <div class="send-button-container flex justify-end m-0">
                 <el-button
                   class="send-button m-0 p-4 fs-20"
                   icon="el-icon-microphone"
@@ -351,8 +351,6 @@ export default {
   border-radius: 20px;
 
   .save-publish {
-    display: flex;
-    justify-content: flex-end;
     width: 100%;
     background-color: #fff;
   }
@@ -360,9 +358,7 @@ export default {
     height: 100%;
     border-radius: 10px;
     .editor {
-      display: flex;
       flex-wrap:wrap;
-      align-items: center;
       border: 1px solid #e5e5e5;
       .editor-input {
         border: none !important;
@@ -375,18 +371,14 @@ export default {
         box-sizing: border-box;
         resize: none; /* 防止textarea被调整大小 */
       }
-      .eidtor-footer{
-        display: flex;
+      .editor-footer{
         width: 100%;
-        justify-content: flex-end;
       }
     }
     .dialog {
       border-radius: 8px;
       background-color: rgb(169, 221, 243);
       .dialog-header {
-        display: flex;
-        align-items: center;
         gap: 12px;
         font-weight: 500;
       }
@@ -420,12 +412,9 @@ export default {
             position: absolute;
             right: 30px;
             bottom: 20px;
-            display: flex;
-            justify-content: flex-end;
-            margin-top: 12px;
             .send-button {
-            border: none;
-            color: black;
+              border: none;
+              color: black;
             }
           }
         }

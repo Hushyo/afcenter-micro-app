@@ -1,7 +1,10 @@
 import axios from 'axios'
 
 const BASE_URL = '/knowledgeBase/api'
-
+const LOGIN_CREDENTIAL = {
+  username: 'admin',
+  password: 'Py+*202402'
+}
 
 let authToken = ''
 let isLogining = false

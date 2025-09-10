@@ -1,10 +1,10 @@
 import ajax from '@/utils/ajaxUtils'
 
-function getKnowledgeBaseList(params) {
+function getKnowledgeBaseList({ name, pageIndex = 1, pageSize = 12}) {
   return ajax({
     method: 'get',
-    url: '/application/1/12',
-    params: params
+    url: `/application/${pageIndex}/${pageSize}`,
+    params: { name }
   })
 }
 
@@ -51,7 +51,7 @@ function getAccessToken(knowledgeBase_id) {
   })
 }
 
-function putAccessToken(knowledgeBase_id, data) {
+function updateAccessToken(knowledgeBase_id, data) {
   return ajax({
     method: 'put',
     url: `/application/${knowledgeBase_id}/access_token`,
@@ -81,7 +81,7 @@ export default {
   updateApiKey,
   deleteApiKey,
   getAccessToken,
-  putAccessToken,
+  updateAccessToken,
   getProvider,
   getModel
 }

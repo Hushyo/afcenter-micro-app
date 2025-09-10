@@ -1,11 +1,11 @@
 <template>
   <div>
-    <h1>Usage Record</h1>
+    <h1>使用记录</h1>
   </div>
 </template>
 <script>
 export default {
-  name: 'usage-record'
+  name: 'use-history'
 }
 </script>
 <style scoped>

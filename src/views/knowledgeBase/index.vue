@@ -3,7 +3,7 @@
     <div class="knowledge-base-header mb-16">
 
       <div class="el-input-wrapper">
-        <el-input v-model="knowledgeBaseName" clearable prefix-icon="el-icon-search" placeholder="按名称搜索" size="medium" @change="searchKnowledgeBaseByName($event)" />
+        <el-input v-model="knowledgeBaseName" clearable prefix-icon="el-icon-search" placeholder="按名称搜索" size="medium" @change="getKnowledgeBaseListByName" />
       </div>
 
       <div class="knowledge-base-header-buttons flex">
@@ -14,7 +14,7 @@
     </div>
 
     <el-row :gutter="15" class="row">
-      <el-col v-for="(knowledgeBase,index) in displayedKnowledgeBaseList" :key="knowledgeBase.name" :span="6" class="col mb-16">
+      <el-col v-for="(knowledgeBase,index) in knowledgeBaseList.records" :key="knowledgeBase.name" :span="6" class="col mb-16">
         <el-card shadow="always" :body-style="{height:'100%'}" class="card" @click.native="selectKnowledgeBase(knowledgeBase)">
           <div class="card-header flex">
             <el-avatar
@@ -45,9 +45,11 @@
             <el-tooltip content="开启对话" placement="top">
               <el-button size="medium" icon="el-icon-chat-dot-round" circle @click.stop />
             </el-tooltip>
+
             <el-tooltip content="设置" placement="top">
               <el-button size="medium" icon="el-icon-setting" circle />
             </el-tooltip>
+
             <el-dropdown size="medium" trigger="click">
               <el-button size="medium" icon="el-icon-more" circle @click.stop /> <!-- 防止冒泡触发卡片选择 -->
               <el-dropdown-menu slot="dropdown">
@@ -59,13 +61,15 @@
           </div>
 
           <div class="status">
-            <el-tag :type="dialogueType(knowledgeBase.dialogue_number).type" effect="light" size="small">{{ dialogueType(knowledgeBase.dialogue_number).version }}</el-tag>
+            <el-tag :type="dialogueType[knowledgeBase.dialogue_number].type" effect="light" size="small">{{ dialogueType[knowledgeBase.dialogue_number].version }}</el-tag>
           </div>
+
         </el-card>
       </el-col>
     </el-row>
+
     <div class="flex justify-center">
-      <Pagination :total="total" :page-index="pageIndex" :limit="pageSize" @pagination="pageChange" />
+      <Pagination :total="total" :page-index="pageIndex" :limit="pageSize" @pagination="handlePageChange" />
     </div>
   </div>
 </template>
@@ -91,12 +95,11 @@ export default {
       knowledgeBaseName: '',
       total: 0,
       pageIndex: 1,
-      pageSize: 12
-    }
-  },
-  computed: {
-    displayedKnowledgeBaseList() { // 用于分页显示知识库列表
-      return this.knowledgeBaseList.records.filter((knowledgeBase, index) => { return index >= this.pageSize * (this.pageIndex - 1) - 1 && index <= this.pageSize * this.pageIndex - 1 })
+      pageSize: 12,
+      dialogueType: {
+        '0': { type: 'warning', version: '自定义' },
+        '1': { type: 'success', version: '标准版' }
+      }
     }
   },
   created() {
@@ -111,15 +114,33 @@ export default {
   methods: {
     getBackgroundColor,
     getTextColor,
+    getKnowledgeBaseList() {
+      const config = {
+        pageIndex: this.pageIndex,
+        pageSize: this.pageSize
+      }
+      if (this.knowledgeBaseName) {
+        config.name = this.knowledgeBaseName
+      }
+      knowledgeBaseApi.getKnowledgeBaseList(config).then(res => {
+        this.knowledgeBaseList = res
+        this.total = res.total
+        if (!config.name) {
+          this.$emit('SET_KNOWLEDGE_BASE_LIST', this.knowledgeBaseList)
+        }
+      })
+    },
+    getKnowledgeBaseListByName() {
+      this.pageIndex = 1
+      this.getKnowledgeBaseList()
+    },
     selectKnowledgeBase(knowledgeBase) {
-      this.$emit('navigateTo', this.routes.settingPage)
-      this.$emit('selectKnowledgeBase', knowledgeBase)
+      this.$emit('SET_ROUTE', this.routes.settingPage)
+      this.$emit('SET_KNOWLEDGE_BASE', knowledgeBase)
     },
-    searchKnowledgeBaseByName(knowledgeBaseName) {
-      this.getKnowledgeBaseList(knowledgeBaseName)
-    },
-    dialogueType(dialogueNumber) {
-      return dialogueNumber === 1 ? { type: 'success', version: '标准版' } : { type: 'warning', version: '自定义' }
+    handlePageChange(pageIndex) {
+      this.pageIndex = pageIndex
+      this.getKnowledgeBaseList()
     },
     checkTextTruncation() {
       if (this.knowledgeBaseList.records) {
@@ -132,20 +153,6 @@ export default {
         })
       }
     },
-    getKnowledgeBaseList(name) {
-      knowledgeBaseApi.getKnowledgeBaseList({ name }).then(res => {
-        this.knowledgeBaseList = res
-        this.total = res.total
-
-        if (!name) {
-          this.$emit('SET_KNOWLEDGE_BASE_LIST', this.knowledgeBaseList)
-        }
-      })
-    },
-    pageChange(pageIndex) {
-      this.pageIndex = pageIndex
-      this.getKnowledgeBaseList()
-    },
   }
 }
 </script>
@@ -154,6 +161,7 @@ export default {
   width: 100%;
   height: 100%;
   border-radius: 20px;
+  background-color: #fff;
 
   .knowledge-base-header {
     display: flex;

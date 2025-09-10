@@ -4,3 +4,4 @@ node_modules
 coverage
 dist
 
+src/utils/ajaxUtil.js

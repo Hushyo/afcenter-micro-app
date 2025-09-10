@@ -21,7 +21,9 @@
           </div>
         </el-button>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item v-for="record in knowledgeBaseList.records" :key="record.name" :command="record.name" :style="{ backgroundColor: record.name === knowledgeBase.name ? 'rgb(236,245,255)' : '' }">{{ record.name }}</el-dropdown-item>
+          <el-dropdown-item v-for="record in knowledgeBaseList.records" :key="record.name" :command="record.name" :style="{ backgroundColor: record.name === knowledgeBase.name ? 'rgb(236,245,255)' : '' }">
+            {{ record.name }}
+          </el-dropdown-item>
           <el-dropdown-item><i class="el-icon-plus" />创建应用</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -34,17 +36,17 @@
   </div>
 </template>
 <script>
-import BasicInfo from './BasicInfo.vue'
+import BasicInfo from '@/views/basicInfo/index.vue'
 import Setting from './Setting.vue'
-import AimTest from './AimTest.vue'
-import UsageRecord from './UsageRecord.vue'
+import HitTesting from '@/views/hitTesting/index.vue'
+import UseHistory from '@/views/useHistory/index.vue'
 export default {
   name: 'setting-page',
   components: {
     BasicInfo,
     Setting,
-    AimTest,
-    UsageRecord
+    HitTesting,
+    UseHistory
   },
   props: {
     knowledgeBase: {
@@ -63,10 +65,10 @@ export default {
   },
   methods: {
     handleSelectPage(index) {
-      this.currentSelectedPage = index === '1' ? 'basicInfo' : index === '2' ? 'Setting' : index === '3' ? 'AimTest' : 'UsageRecord'
+      // index 应该是路由
+      this.currentSelectedPage = index === '1' ? 'basicInfo' : index === '2' ? 'Setting' : index === '3' ? 'HitTesting' : 'UseHistory'
     },
     handleDropdownCommand(command) {
-      // 切换组件绑定的知识库，组件监听知识库切换
       this.knowledgeBase = this.knowledgeBaseList.records.find(item => item.name === command)
     }
   }

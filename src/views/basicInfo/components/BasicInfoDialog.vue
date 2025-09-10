@@ -35,6 +35,22 @@
       </el-form-item>
     </el-form>
 
+    <el-form v-if="dialogTypeKey === 'setApiKey'" v-model="selectedApiKey" label-position="top">
+
+      <el-form-item label="允许跨域地址">
+        <el-switch v-model="selectedApiKey.allow_cross_domain" />
+      </el-form-item>
+
+      <el-form-item>
+        <el-input
+          v-model="corsUrlsText"
+          type="textarea"
+          :rows="14"
+          :placeholder="`请输入允许的跨域地址，一行一个，如:\nhttp://127.0.0.1:9527\nhttp://www.xxxx.com`"
+        />
+      </el-form-item>
+    </el-form>
+
     <el-row v-if="dialogTypeKey === 'embeddingThirdParty'" :gutter="12">
       <el-col v-for="thirdParty in embeddingThirdParty" :key="thirdParty.title" :span="12">
         <div class="flex flex-column align-start border">
@@ -108,20 +124,33 @@ export default {
         deleteApiKey: {
           title: '',
           width: '30%'
+        },
+        setApiKey: {
+          title: '设置',
+          width: '40%'
         }
       },
-      tempWhiteListText: '',
-      hasModifiedWhiteList: false
+      tempText: '',
+      hasModifiedTempText: false
     }
   },
   computed: {
     whiteListText: {
       get() {
-        return this.hasModifiedWhiteList ? this.tempWhiteListText : this.accessToken.white_list.join('\n')
+        return this.hasModifiedTempText ? this.tempText : this.accessToken.white_list.join('\n')
       },
       set(value) {
-        this.tempWhiteListText = value
-        this.hasModifiedWhiteList = true
+        this.tempText = value
+        this.hasModifiedTempText = true
+      }
+    },
+    corsUrlsText: {
+      get() {
+        return this.hasModifiedTempText ? this.tempText : this.selectedApiKey.cross_domain_list.join('\n')
+      },
+      set(value) {
+        this.tempText = value
+        this.hasModifiedTempText = true
       }
     },
     visible: {
@@ -157,15 +186,21 @@ export default {
       handler(newVal) {
         if (newVal) {
           // 对话框打开或关闭时，重置临时文本和修改标志
-          this.tempWhiteListText = ''
-          this.hasModifiedWhiteList = false
+          this.tempText = ''
+          this.hasModifiedTempText = false
         }
       }
     }
   },
   methods: {
     handleSave() {
-      this.$emit('update:accessToken', { ...this.accessToken, white_list: this.whiteListText.split('\n') })
+      if (this.selectedApiKey.cross_domain_list) {
+        console.log('updateApiKey')
+        this.$emit('update:selectedApiKey',
+          { ...this.selectedApiKey, cross_domain_list: this.corsUrlsText.split('\n').filter(item => item.replace(/\s/g, '')) })
+      }
+      this.$emit('update:accessToken',
+        { ...this.accessToken, white_list: this.whiteListText.split('\n').filter(item => item.replace(/\s/g, '')) })
       this.$emit('save')
     },
     handleClose() {
@@ -173,6 +208,10 @@ export default {
     },
     handleDelete() {
       this.$emit('delete')
+    },
+    handleCopy(text) {
+      this.$copyText(text)
+      this.$message.success('复制成功')
     }
   },
 }
