@@ -1,0 +1,50 @@
+
+$spacing-values:0,2,4,6,8,10,12,14,16,18,20,22,24;
+@each $value in $spacing-values {
+    .m-#{$value} {
+        margin: #{$value}px;
+    }
+    .mb-#{$value} {
+        margin-bottom: #{$value}px !important;
+    }
+    .mt-#{$value} {
+        margin-top: #{$value}px !important;
+    }
+    .ml-#{$value} {
+        margin-left: #{$value}px !important;
+    }
+    .mr-#{$value} {
+        margin-right: #{$value}px !important;
+    }
+}
+
+@each $value in $spacing-values {
+    .p-#{$value} {
+        padding: #{$value}px;
+    }
+    .pb-#{$value} {
+        padding-bottom: #{$value}px !important;
+    }
+    .pl-#{$value} {
+        padding-left: #{$value}px !important;
+    }
+    .pr-#{$value} {
+        padding-right: #{$value}px !important;
+    }
+    .pt-#{$value} {
+        padding-top: #{$value}px !important;
+    }
+}
+
+// top bottom - left right
+@each $tb in $spacing-values {
+    @each $lr in $spacing-values {
+        .p-#{$tb}-#{$lr} {
+            padding: #{$tb}px #{$lr}px !important;
+        }
+        .m-#{$tb}-#{$lr} {
+            margin: #{$tb}px #{$lr}px !important;
+        }
+    }
+}
+

@@ -1,0 +1,20 @@
+$fontSizes: 10,12,14,16,18,20;
+@each $fontSize in $fontSizes {
+    .fs-#{$fontSize} {
+        font-size: #{$fontSize}px;
+    }
+}
+
+$fontWeights: 400,500,600,700,800,900,1000;
+@each $fontWeight in $fontWeights {
+    .fw-#{$fontWeight} {
+        font-weight: #{$fontWeight} !important;
+    }
+}
+
+*{
+    font-family: "PingFang SC", AlibabaPuHuiTi;
+}
+.bold{
+    font-weight: bold;
+}
