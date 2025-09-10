@@ -3,7 +3,7 @@
     v-if="dialogTypeKey"
     :title="dialogType[dialogTypeKey].title"
     :width="dialogType[dialogTypeKey].width"
-    :visible.sync="dialogVisible"
+    :visible.sync="visible"
     :close-on-click-modal="false"
     :close-on-press-escape="false"
     @close="handleClose"
@@ -20,9 +20,11 @@
       <el-form-item label="每客户端提问限制">
         <el-input-number v-model="accessToken.access_num" style="width: 50%;" :max="10000" :min="0" controls-position="right" /> 次/天
       </el-form-item>
+
       <el-form-item label="允许白名单">
         <el-switch v-model="accessToken.white_active" />
       </el-form-item>
+
       <el-form-item>
         <el-input
           v-model="whiteListText"
@@ -44,9 +46,7 @@
               <el-button style="border:none;color:black" class="fs-14" icon="el-icon-copy-document" circle @click="handleCopy(thirdParty.code)" />
             </div>
             <el-scrollbar>
-              <div class="p-8 pt-0 code fs-14">
-{{ thirdParty.code }}
-              </div>
+              <div class="p-8 pt-0 code fs-14">{{ thirdParty.code }}</div>
             </el-scrollbar>
           </div>
         </div>
@@ -77,9 +77,17 @@ export default {
       type: String,
       required: true
     },
+    dialogVisible: {
+      type: Boolean,
+      required: true
+    },
     accessToken: {
       type: Object,
       required: true
+    },
+    selectedApiKey: {
+      type: Object,
+      default: () => ({})
     }
   },
   data() {
@@ -102,7 +110,30 @@ export default {
           width: '30%'
         }
       },
-      embeddingThirdParty: [
+      tempWhiteListText: '',
+      hasModifiedWhiteList: false
+    }
+  },
+  computed: {
+    whiteListText: {
+      get() {
+        return this.hasModifiedWhiteList ? this.tempWhiteListText : this.accessToken.white_list.join('\n')
+      },
+      set(value) {
+        this.tempWhiteListText = value
+        this.hasModifiedWhiteList = true
+      }
+    },
+    visible: {
+      get() {
+        return this.dialogVisible
+      },
+      set(value) {
+        this.$emit('update:dialogVisible', value)
+      }
+    },
+    embeddingThirdParty() {
+      return [
         {
           title: '全屏模式',
           imgSrc: 'http://192.168.1.252:4399/assets/window1-b13220c7.png',
@@ -116,18 +147,25 @@ export default {
       ]
     }
   },
-  computed: {
-    whiteListText: {
-      get() {
-        return this.accessToken.white_list.join('\n')
-      },
-      set(value) {
-        this.$emit('update:accessToken', { ...this.accessToken, white_list: value.split('\n') })
+  watch: {
+    selectedApiKey: {
+      handler() {
+        this.dialogType.deleteApiKey.title = `确认删除API Key?:${this.selectedApiKey.secret_key}`
+      }
+    },
+    dialogVisible: {
+      handler(newVal) {
+        if (newVal) {
+          // 对话框打开或关闭时，重置临时文本和修改标志
+          this.tempWhiteListText = ''
+          this.hasModifiedWhiteList = false
+        }
       }
     }
   },
   methods: {
     handleSave() {
+      this.$emit('update:accessToken', { ...this.accessToken, white_list: this.whiteListText.split('\n') })
       this.$emit('save')
     },
     handleClose() {
@@ -136,6 +174,11 @@ export default {
     handleDelete() {
       this.$emit('delete')
     }
-  }
+  },
 }
 </script>
+<style scoped lang="scss">
+.code {
+  white-space: pre-wrap;
+}
+</style>

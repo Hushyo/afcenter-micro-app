@@ -72,7 +72,7 @@
       </div>
     </el-scrollbar>
 
-    <el-dialog
+    <!-- <el-dialog
       v-if="dialogTypeKey"
       :title="dialogType[dialogTypeKey].title"
       :width="dialogType[dialogTypeKey].width"
@@ -140,14 +140,28 @@
         <el-button type="primary" @click="handleSave">保存</el-button>
       </template>
 
-    </el-dialog>
+    </el-dialog> -->
+    <basic-info-dialog
+      v-if="accessToken"
+      :dialog-type-key="dialogTypeKey"
+      :dialog-visible="dialogVisible"
+      :access-token.sync="accessToken"
+      :selected-api-key="selectedApiKey"
+      @save="handleSave"
+      @close="closeDialog"
+      @delete="confirmDeleteApiKey"
+    />
   </div>
 </template>
 <script>
 import { getBackgroundColor, getTextColor } from '@/utils/color.js'
 import knowledgeBaseApi from '@/api/knowledgeBase'
+import BasicInfoDialog from '../basicInfo/components/BasicInfoDialog.vue'
 export default {
   name: 'basic-info',
+  components: {
+    BasicInfoDialog
+  },
   filters: {
     formatTime(time) {
       return time.replace('T', ' ').slice(0, time.indexOf('.'))
@@ -161,59 +175,22 @@ export default {
   },
   data() {
     return {
-      accessToken: {
-        access_token: '',
-        access_num: 9999,
-        white_active: false,
-        is_active: false,
-        white_list: [],
-        show_source: false
-      },
+      accessToken: '',
       apiKeys: [],
       selectedApiKeyId: '',
       dialogVisible: false,
-      dialogTypeKey: '',
-      dialogType: {
-        displaySetting: {
-          title: '显示设置',
-          width: '50%'
-        },
-        accessRestriction: {
-          title: '访问限制',
-          width: '50%'
-        },
-        embeddingThirdParty: {
-          title: '嵌入第三方',
-          width: '890px'
-        },
-        deleteApiKey: {
-          title: '',
-          width: '30%'
-        }
-      },
-      embeddingThirdParty: [
-        {
-          title: '全屏模式',
-          imgSrc: 'http://192.168.1.252:4399/assets/window1-b13220c7.png',
-          code: `<iframe\nsrc="http://192.168.1.252:4399/#/chat/${this.accessToken.access_token}"\nstyle="width: 100%; height: 100%;"\nframeborder="0"\nallow="microphone">\n<\/iframe>`
-        },
-        {
-          title: '浮窗模式',
-          imgSrc: 'http://192.168.1.252:4399/assets/window2-6d9fe74f.png',
-          code: `<script\nasync\ndefer\nsrc="http://192.168.1.252:4399/api/app/assistant-embed?protocol=http&host=192.168.1.252:4399&token=${this.accessToken.access_token}">\n<\/script>`
-        }
-      ]
+      dialogTypeKey: ''
     }
   },
   computed: {
-    whiteListText: {
-      get() {
-        return this.accessToken.white_list.join('\n')
-      },
-      set(value) {
-        this.accessToken.white_list = value.split('\n')
-      }
-    },
+    // whiteListText: {
+    //   get() {
+    //     return this.accessToken.white_list.join('\n')
+    //   },
+    //   set(value) {
+    //     this.accessToken.white_list = value.split('\n')
+    //   }
+    // },
     selectedApiKey() {
       return this.apiKeys.find(item => item.id === this.selectedApiKeyId)
     },
@@ -254,7 +231,6 @@ export default {
     },
     handleDeleteApiKey(api_key_id) {
       this.selectedApiKeyId = api_key_id
-      this.dialogType.deleteApiKey.title = `确认删除API Key?:${this.selectedApiKey.secret_key}`
       this.openDialog('deleteApiKey')
     },
     confirmDeleteApiKey() {
@@ -270,10 +246,6 @@ export default {
         this.$message.success('修改成功')
         this.getApiKey()
       })
-    },
-    handleCopy(code) {
-      this.$copyText(code)
-      this.$message.success('复制成功')
     },
     handleChangeKnowledgeBaseIsActive() {
       knowledgeBaseApi.putAccessToken(this.knowledgeBase.id, { is_active: this.accessToken.is_active }).then(res => {
@@ -300,7 +272,6 @@ export default {
       })
     },
     openDialog(dialogTypeKey) {
-      console.log(dialogTypeKey)
       this.dialogTypeKey = dialogTypeKey
       this.dialogVisible = true
     },
@@ -312,9 +283,6 @@ export default {
 }
 </script>
 <style scoped>
-.code {
-  white-space: pre-wrap;
-}
 .basic-info {
   .main {
     .main-header {
